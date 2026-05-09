@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>CSE BRUR Sports Week 2026 | Full Live Match Control</title>
+    <!-- Google Fonts + Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0A0D14;
+            color: #EEF2FF;
+            scroll-behavior: smooth;
+        }
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(255, 70, 30, 0.12), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 28px;
+            position: relative;
+            z-index: 2;
+        }
+        .hero {
+            padding: 2rem 0 1.5rem;
+            border-bottom: 1px solid rgba(255, 90, 40, 0.3);
+        }
+        .tourney-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #FF3B1D20;
+            backdrop-filter: blur(6px);
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 0.5px solid #FF6830;
+            color: #FF9B6E;
+            margin-bottom: 1.2rem;
+        }
+        h1 {
+            font-size: clamp(3rem, 10vw, 5.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #FFFFFF 20%, #FFC49B 60%, #FF5A2A 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .subhead {
+            font-size: 1.1rem;
+            color: #C7D3FF;
+            max-width: 650px;
+            margin: 0.5rem 0 1rem;
+        }
+        .stats-row {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            background: #0F1320CC;
+            border-radius: 1.5rem;
+            padding: 0.6rem 1.5rem;
+            width: fit-content;
+        }
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 2rem 0 1.5rem;
+            border-bottom: 1px solid #2A2F42;
+            padding-bottom: 0.5rem;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 40px;
+            color: #9FA9D1;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-btn i { margin-right: 8px; }
+        .tab-btn.active {
+            background: #FF5722;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+        }
+        .tab-btn:hover:not(.active) { background: #252c3f; color: #FFC49B; }
+        .panel { display: none; animation: fadeIn 0.2s ease; }
+        .panel.active-panel { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px);} to { opacity: 1; transform: translateY(0);} }
+        .match-card, .schedule-card, .moment-card, .performer-card {
+            background: #0F1320DD;
+            backdrop-filter: blur(5px);
+            border-radius: 1.5rem;
+            padding: 1.2rem 1.5rem;
+            border: 1px solid #2A2F42;
+            margin-bottom: 1rem;
+        }
+        .sport-badge {
+            background: #FF572230;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            display: inline-block;
+            margin-bottom: 0.6rem;
+        }
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #0F1320AA;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 0.8rem 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid #2a2f42;
+        }
+        .rank { font-weight: 800; color: #FF9F6E; width: 60px; }
+        .admin-section {
+            background: #0A0E18;
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            margin-top: 1rem;
+            border: 1px solid #ff572280;
+        }
+        input, select, textarea {
+            background: #1E243B;
+            border: 1px solid #3A425C;
+            padding: 0.7rem 1rem;
+            border-radius: 1rem;
+            color: white;
+            width: 100%;
+            margin-bottom: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+        button {
+            background: #FF5722;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .btn-danger { background: #a03d22; }
+        .btn-warning { background: #e67e22; }
+        .btn-success { background: #2c6e2c; }
+        .live-indicator { color: #ff5e3a; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
+        @media (max-width: 700px) {
+            .container { padding: 0 18px; }
+            .tab-btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
+        }
+        .leaderboard-edit-row, .performer-edit-row, .schedule-edit-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 8px 0;
+            background: #11161f;
+            padding: 0.8rem;
+            border-radius: 1rem;
+        }
+        .performer-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .performer-stat-card {
+            flex: 1;
+            min-width: 180px;
+            background: #0F1320;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 3px solid #FF5722;
+        }
+        .stat-category { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #FF8C5A; }
+        .player-name { font-weight: 800; font-size: 1.2rem; margin: 0.4rem 0; }
+        .team-name-sm { font-size: 0.7rem; color: #A5B2DA; }
+        .value-stat { font-size: 1.8rem; font-weight: 800; color: #FFB47B; }
+        
+        .admin-badge {
+            background: #ff5722;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+        .logout-btn {
+            background: #6c757d;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            margin-left: 1rem;
+        }
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .live-score-section {
+            background: linear-gradient(135deg, #1a1f2e, #0f1320);
+            border-radius: 1rem;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #ff3a1d;
+        }
+        .live-score-section h4 {
+            margin-bottom: 1rem;
+        }
+        .score-update-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .score-update-grid input, .score-update-grid select {
+            margin-bottom: 0;
+        }
+        .current-live-preview {
+            background: #0a0e18;
+            padding: 0.8rem;
+            border-radius: 0.8rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="container">
+    <div class="hero">
+        <div class="tourney-badge"><i class="fas fa-fire"></i> Ongoing Tournament · <span id="adminStatusBadge">Public View</span></div>
+        <h1>UNLEASH THE<br>BEASTS.</h1>
+        <p class="subhead">CSE BRUR Sports Week 2026 — Live scores, leaderboard, top performers & secure admin management.</p>
+        <div class="stats-row">
+            <div><i class="fas fa-users"></i> <strong>+6 Teams</strong></div>
+            <div><i class="fas fa-futbol"></i> <strong>12 Matches</strong></div>
+            <div><i class="fas fa-trophy"></i> <strong>Championship</strong></div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" data-tab="live"><i class="fas fa-eye"></i> Live</button>
+        <button class="tab-btn" data-tab="schedule"><i class="fas fa-calendar-alt"></i> Schedule</button>
+        <button class="tab-btn" data-tab="leaderboard"><i class="fas fa-chart-simple"></i> LeaderBoard</button>
+        <button class="tab-btn" data-tab="moments"><i class="fas fa-camera"></i> Moments</button>
+        <button class="tab-btn" data-tab="admin" id="adminTabBtn"><i class="fas fa-lock"></i> Admin Panel <span id="adminLockIcon" class="admin-badge">🔒</span></button>
+    </div>
+
+    <!-- LIVE PANEL -->
+    <div id="livePanel" class="panel active-panel">
+        <div id="liveMatchContainer" class="match-card" style="border-left: 4px solid #ff5722;">
+            <div class="sport-badge"><i class="fas fa-circle" style="color:#ff3a1d; font-size:8px;"></i> LIVE NOW</div>
+            <div id="liveMatchContent"><strong>🏏 CRICKET:</strong> মাস্টার অফ সিন্ডিকেট vs তেপান্তর ১৩ — 239/1 (12) vs 82/3 (10) [MAS leads]</div>
+        </div>
+        <h3><i class="fas fa-microphone-alt"></i> Recent Battles</h3>
+        <div id="liveMatchesContainer">
+            <div class="match-card"><div class="sport-badge">⚽ football</div><div><strong>মাস্টার অফ সিন্ডিকেট vs অদম্য ১৬</strong> 1-1 | MOM: সৌরভ ভাই</div><div>⚽ Goal: ফয়সাল, আশিক</div></div>
+            <div class="match-card"><div class="sport-badge">⚽ football</div><div><strong>তেপান্তর ১৩ vs চিরন্তন ১৪</strong> 0-0 | MOM: ফয়সাল</div></div>
+            <div class="match-card"><div class="sport-badge">🏏 cricket</div><div><strong>মাস্টার অফ সিন্ডিকেট vs তেপান্তর ১৩</strong> 239/1 - 82/3 | MAS won by 112 runs | MOM: আজাদ হোসেন</div></div>
+            <div class="match-card"><div class="sport-badge">🏏 cricket</div><div><strong>প্রত্যয়ী ১৫ vs সংশপ্তক ১৭</strong> 131/4 - 132/1 | সংশপ্তক won by 9 wkts | MOM: আজাদ</div></div>
+            <div class="match-card"><div class="sport-badge">⚽ football</div><div><strong>তেপান্তর ১৩ vs প্রত্যয়ী ১৫</strong> 0-1 | প্রত্যয়ী ১৫ জয়ী | MOM: নাহমিদ হাসান</div></div>
+        </div>
+    </div>
+
+    <!-- SCHEDULE PANEL -->
+    <div id="schedulePanel" class="panel">
+        <div id="scheduleContainer"></div>
+    </div>
+
+    <!-- LEADERBOARD PANEL -->
+    <div id="leaderboardPanel" class="panel">
+        <h3><i class="fas fa-trophy"></i> Team Standings</h3>
+        <table class="leaderboard-table" id="leaderboardTable">
+            <thead><tr><th>Rank</th><th>Team</th><th>Played</th><th>W/L/D</th><th>Points</th></tr></thead>
+            <tbody id="leaderboardBody"></tbody>
+        </table>
+        <h3 style="margin-top:28px;">🏅 Individual Top Performers</h3>
+        <div id="topPerformersContainer" class="performer-grid"></div>
+    </div>
+
+    <!-- MOMENTS PANEL -->
+    <div id="momentsPanel" class="panel">
+        <div id="momentsContainer">
+            <div class="moment-card"><i class="fas fa-image"></i> <strong>🔥 আজাদ's 114* Run masterclass</strong> — Six sixes vs তেপান্তর ১৩</div>
+            <div class="moment-card"><i class="fas fa-futbol"></i> <strong>নাহমিদ হাসান</strong> — last minute winner against তেপান্তর</div>
+            <div class="moment-card"><i class="fas fa-trophy"></i> <strong>সংশপ্তক ১৭</strong> — 9-wicket demolition, fielding brilliance</div>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="adminPanel" class="panel">
+        <div id="adminContentArea"></div>
+    </div>
+    
+    <footer style="text-align:center; padding:1.5rem; border-top:1px solid #20273F; margin-top:1rem;">
+        <i class="fas fa-dragon"></i> CSE BRUR Sports Week — Full Admin Control | Default: admin / sports2026
+    </footer>
+</div>
+
+<script>
+    // ==================== SECURITY ====================
+    const ADMIN_CREDENTIALS = { username: "admin", password: "sports2026" };
+    let isAdminLoggedIn = false;
+    
+    // ==================== DATA MODELS ====================
+    let teamsData = [
+        { name: "মাস্টার অফ সিন্ডিকেট", played: 3, wld: "2-0-1", points: 7 },
+        { name: "প্রত্যয়ী ১৫", played: 3, wld: "2-1-0", points: 6 },
+        { name: "সংশপ্তক ১৭", played: 2, wld: "2-0-0", points: 6 },
+        { name: "চিরন্তন ১৪", played: 2, wld: "0-0-2", points: 2 },
+        { name: "তেপান্তর ১৩", played: 3, wld: "0-2-1", points: 1 },
+        { name: "অদম্য ১৬", played: 2, wld: "0-1-1", points: 1 }
+    ];
+    
+    let performersData = [
+        { category: "🏏 MOST RUNS", player: "আজাদ ভাই", team: "মাস্টার অফ সিন্ডিকেট", value: "114 runs" },
+        { category: "🎯 MOST WICKETS", player: "রাকিবুল হাসান", team: "সংশপ্তক ১৭", value: "8 wickets" },
+        { category: "⚽ MOST GOALS", player: "নাহমিদ হাসান", team: "প্রত্যয়ী ১৫", value: "3 goals" },
+        { category: "🧤 CLEAN SHEETS", player: "সৌরভ ভাই", team: "মাস্টার অফ সিন্ডিকেট", value: "2 clean sheets" }
+    ];
+    
+    // Schedule Data
+    let scheduleData = [
+        { date: "09 May — 02:00 PM", venue: "VC Field", match: "চিরন্তন ১৪ 🆚 প্রত্যয়ী ১৫", sport: "Football" },
+        { date: "10 May — 10:00 AM", venue: "Central Ground", match: "মাস্টার অফ সিন্ডিকেট 🆚 সংশপ্তক ১৭", sport: "Cricket" },
+        { date: "10 May — 03:00 PM", venue: "VC Field", match: "অদম্য ১৬ 🆚 তেপান্তর ১৩", sport: "Football" },
+        { date: "11 May — 11:00 AM", venue: "Main Arena", match: "Semi Final 1", sport: "TBD" },
+        { date: "12 May — 02:00 PM", venue: "Grand Finale", match: "Championship Final", sport: "TBD" }
+    ];
+    
+    // Live Match Data - COMPLETELY EDITABLE (team names, sport, score, status)
+    let liveMatchData = {
+        sport: "🏏 CRICKET",
+        team1: "মাস্টার অফ সিন্ডিকেট",
+        team2: "তেপান্তর ১৩",
+        score1: "239/1 (12)",
+        score2: "82/3 (10)",
+        status: "[MAS leads]"
+    };
+    
+    // ==================== RENDER FUNCTIONS ====================
+    function renderLeaderboard() {
+        const tbody = document.getElementById('leaderboardBody');
+        if(!tbody) return;
+        const sorted = [...teamsData].sort((a,b) => b.points - a.points);
+        tbody.innerHTML = '';
+        sorted.forEach((team, idx) => {
+            const row = tbody.insertRow();
+            row.insertCell(0).innerHTML = `<span class="rank">${idx + 1}</span>`;
+            row.insertCell(1).innerHTML = team.name;
+            row.insertCell(2).innerHTML = team.played;
+            row.insertCell(3).innerHTML = team.wld;
+            row.insertCell(4).innerHTML = team.points;
+        });
+    }
+    
+    function renderTopPerformersDisplay() {
+        const container = document.getElementById('topPerformersContainer');
+        if(!container) return;
+        container.innerHTML = '';
+        performersData.forEach(perf => {
+            const card = document.createElement('div');
+            card.className = 'performer-stat-card';
+            card.innerHTML = `<div class="stat-category">${escapeHtml(perf.category)}</div><div class="player-name">${escapeHtml(perf.player)}</div><div class="team-name-sm">${escapeHtml(perf.team)}</div><div class="value-stat">${escapeHtml(perf.value)}</div>`;
+            container.appendChild(card);
+        });
+    }
+    
+    function renderSchedule() {
+        const container = document.getElementById('scheduleContainer');
+        if(!container) return;
+        container.innerHTML = '<h3><i class="fas fa-calendar-alt"></i> Match Schedule</h3>';
+        scheduleData.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = 'schedule-card';
+            div.innerHTML = `<i class="fas fa-calendar-day"></i> <strong>${escapeHtml(item.date)}</strong> | ${escapeHtml(item.venue)} | ${escapeHtml(item.match)} <span style="background:#ff572230; padding:2px 8px; border-radius:20px; font-size:0.7rem;">${escapeHtml(item.sport)}</span>`;
+            container.appendChild(div);
+        });
+    }
+    
+    function renderLiveScore() {
+        const liveContent = document.getElementById('liveMatchContent');
+        if(liveContent) {
+            liveContent.innerHTML = `<strong>${escapeHtml(liveMatchData.sport)}:</strong> ${escapeHtml(liveMatchData.team1)} vs ${escapeHtml(liveMatchData.team2)} — ${escapeHtml(liveMatchData.score1)} vs ${escapeHtml(liveMatchData.score2)} ${escapeHtml(liveMatchData.status)}`;
+        }
+    }
+    
+    function updateLiveMatchFromAdmin() {
+        const newSport = document.getElementById('liveSport')?.value;
+        const newTeam1 = document.getElementById('liveTeam1')?.value.trim();
+        const newTeam2 = document.getElementById('liveTeam2')?.value.trim();
+        const newScore1 = document.getElementById('liveScore1')?.value.trim();
+        const newScore2 = document.getElementById('liveScore2')?.value.trim();
+        const newStatus = document.getElementById('liveStatus')?.value.trim();
+        
+        if(newSport) liveMatchData.sport = newSport;
+        if(newTeam1) liveMatchData.team1 = newTeam1;
+        if(newTeam2) liveMatchData.team2 = newTeam2;
+        if(newScore1) liveMatchData.score1 = newScore1;
+        if(newScore2) liveMatchData.score2 = newScore2;
+        if(newStatus) liveMatchData.status = newStatus;
+        
+        renderLiveScore();
+        
+        // Clear inputs
+        if(document.getElementById('liveTeam1')) document.getElementById('liveTeam1').value = '';
+        if(document.getElementById('liveTeam2')) document.getElementById('liveTeam2').value = '';
+        if(document.getElementById('liveScore1')) document.getElementById('liveScore1').value = '';
+        if(document.getElementById('liveScore2')) document.getElementById('liveScore2').value = '';
+        if(document.getElementById('liveStatus')) document.getElementById('liveStatus').value = '';
+        
+        alert("✅ Live match updated successfully!");
+    }
+    
+    function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m) { if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m; }); }
+    
+    // ==================== ADMIN CONTROLS ====================
+    function renderAdminScheduleControls() {
+        const container = document.getElementById('scheduleAdminControls');
+        if(!container) return;
+        container.innerHTML = '<div style="margin-bottom:10px;"><strong>✏️ Edit or Delete Schedule Matches:</strong></div>';
+        scheduleData.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = 'schedule-edit-row';
+            div.innerHTML = `
+                <input type="text" id="schedule_date_${idx}" value="${escapeHtml(item.date)}" style="width:160px;" placeholder="Date">
+                <input type="text" id="schedule_venue_${idx}" value="${escapeHtml(item.venue)}" style="width:120px;" placeholder="Venue">
+                <input type="text" id="schedule_match_${idx}" value="${escapeHtml(item.match)}" style="width:200px;" placeholder="Match">
+                <input type="text" id="schedule_sport_${idx}" value="${escapeHtml(item.sport)}" style="width:100px;" placeholder="Sport">
+                <button class="update-schedule-btn" data-idx="${idx}" style="background:#2c6e2c;">Update</button>
+                <button class="delete-schedule-btn" data-idx="${idx}" style="background:#9e2a2a;">Delete</button>
+            `;
+            container.appendChild(div);
+        });
+        
+        document.querySelectorAll('.update-schedule-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                scheduleData[idx] = {
+                    date: document.getElementById(`schedule_date_${idx}`).value.trim(),
+                    venue: document.getElementById(`schedule_venue_${idx}`).value.trim(),
+                    match: document.getElementById(`schedule_match_${idx}`).value.trim(),
+                    sport: document.getElementById(`schedule_sport_${idx}`).value.trim()
+                };
+                renderSchedule();
+                renderAdminScheduleControls();
+                alert("Schedule updated!");
+            });
+        });
+        
+        document.querySelectorAll('.delete-schedule-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                if(confirm(`Delete this match from schedule?`)) {
+                    scheduleData.splice(idx, 1);
+                    renderSchedule();
+                    renderAdminScheduleControls();
+                    alert("Deleted.");
+                }
+            });
+        });
+    }
+    
+    function addNewScheduleMatch() {
+        const date = document.getElementById('newScheduleDate')?.value.trim();
+        const venue = document.getElementById('newScheduleVenue')?.value.trim();
+        const match = document.getElementById('newScheduleMatch')?.value.trim();
+        const sport = document.getElementById('newScheduleSport')?.value.trim();
+        if(!date || !venue || !match || !sport) { alert("Fill all schedule fields"); return; }
+        scheduleData.push({ date, venue, match, sport });
+        renderSchedule();
+        if(isAdminLoggedIn) renderAdminScheduleControls();
+        document.getElementById('newScheduleDate').value = '';
+        document.getElementById('newScheduleVenue').value = '';
+        document.getElementById('newScheduleMatch').value = '';
+        document.getElementById('newScheduleSport').value = '';
+        alert("Match added to schedule!");
+    }
+    
+    // Admin Panel Render
+    function renderAdminPanel() {
+        const adminArea = document.getElementById('adminContentArea');
+        if(!adminArea) return;
+        
+        if(!isAdminLoggedIn) {
+            adminArea.innerHTML = `<div class="admin-section"><div class="admin-header"><h3><i class="fas fa-lock"></i> Admin Access Restricted</h3></div><p style="margin-bottom: 1.5rem;">Please log in to access the administration panel.</p><div id="loginFormContainer"><input type="text" id="loginUsername" placeholder="Username"><input type="password" id="loginPassword" placeholder="Password"><button id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login</button><div id="loginError" class="error-msg"></div></div><div style="margin-top: 1.5rem;"><p style="font-size: 0.75rem;">Demo: <strong>admin</strong> / <strong>sports2026</strong></p></div></div>`;
+            document.getElementById('loginBtn')?.addEventListener('click', handleLogin);
+            document.getElementById('loginPassword')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleLogin(); });
+        } else {
+            adminArea.innerHTML = `
+                <div class="admin-section">
+                    <div class="admin-header"><h3><i class="fas fa-user-shield"></i> Admin Dashboard <span style="color:#4caf50;">● Active</span></h3><button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
+                    
+                    <!-- LIVE SCORE MANAGEMENT - COMPLETE CONTROL -->
+                    <div class="live-score-section">
+                        <h4><i class="fas fa-tv"></i> 🎯 Live Score Management (Full Control)</h4>
+                        <div class="current-live-preview">
+                            <strong>Current Live Match:</strong><br>
+                            ${escapeHtml(liveMatchData.sport)} | ${escapeHtml(liveMatchData.team1)} vs ${escapeHtml(liveMatchData.team2)}<br>
+                            Score: ${escapeHtml(liveMatchData.score1)} - ${escapeHtml(liveMatchData.score2)}<br>
+                            Status: ${escapeHtml(liveMatchData.status)}
+                        </div>
+                        <div class="score-update-grid">
+                            <select id="liveSport">
+                                <option value="🏏 CRICKET">🏏 CRICKET</option>
+                                <option value="⚽ FOOTBALL">⚽ FOOTBALL</option>
+                                <option value="🏀 BASKETBALL">🏀 BASKETBALL</option>
+                                <option value="🏸 BADMINTON">🏸 BADMINTON</option>
+                            </select>
+                            <input type="text" id="liveTeam1" placeholder="Team 1 Name (e.g., মাস্টার অফ সিন্ডিকেট)">
+                            <input type="text" id="liveTeam2" placeholder="Team 2 Name (e.g., তেপান্তর ১৩)">
+                            <input type="text" id="liveScore1" placeholder="Team 1 Score (e.g., 239/1 or 3 goals)">
+                            <input type="text" id="liveScore2" placeholder="Team 2 Score (e.g., 82/3 or 1 goal)">
+                            <input type="text" id="liveStatus" placeholder="Status (e.g., [MAS leads] or Half Time)">
+                        </div>
+                        <button id="updateLiveMatchBtn" style="background:#e67e22; margin-top:10px;"><i class="fas fa-sync-alt"></i> Update Live Match</button>
+                    </div>
+                    
+                    <hr>
+                    <h4>📅 Schedule Management</h4>
+                    <div id="scheduleAdminControls"></div>
+                    <div style="background:#1a1f2e; padding:1rem; border-radius:1rem; margin:1rem 0;">
+                        <h5>➕ Add New Match to Schedule</h5>
+                        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                            <input type="text" id="newScheduleDate" placeholder="Date (e.g., 13 May — 04:00 PM)" style="flex:1;">
+                            <input type="text" id="newScheduleVenue" placeholder="Venue" style="flex:1;">
+                            <input type="text" id="newScheduleMatch" placeholder="Match (Team A vs Team B)" style="flex:2;">
+                            <input type="text" id="newScheduleSport" placeholder="Sport" style="flex:1;">
+                            <button id="addScheduleBtn"><i class="fas fa-plus"></i> Add Match</button>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <h4>📊 Team Leaderboard Management</h4>
+                    <div id="leaderboardAdminControls"></div>
+                    <div style="background:#1a1f2e; padding:1rem; border-radius:1rem; margin:1rem 0;">
+                        <input type="text" id="newTeamName" placeholder="Team Name" style="width:200px; display:inline-block;">
+                        <input type="number" id="newPlayed" placeholder="Played" style="width:80px;">
+                        <input type="text" id="newWLD" placeholder="W/L/D" style="width:100px;">
+                        <input type="number" id="newPoints" placeholder="Points" style="width:80px;">
+                        <button id="addNewTeamBtn"><i class="fas fa-plus"></i> Add Team</button>
+                    </div>
+                    
+                    <hr>
+                    <h4>🏅 Individual Top Performers</h4>
+                    <div id="performersAdminControls"></div>
+                    <div style="background:#1a1f2e; padding:1rem; border-radius:1rem;">
+                        <h5>➕ Add New Performer</h5>
+                        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                            <input type="text" id="newPerfCategory" placeholder="Category" style="flex:1;">
+                            <input type="text" id="newPerfPlayer" placeholder="Player" style="flex:1;">
+                            <input type="text" id="newPerfTeam" placeholder="Team" style="flex:1;">
+                            <input type="text" id="newPerfValue" placeholder="Value" style="flex:1;">
+                            <button id="addNewPerformerBtn"><i class="fas fa-plus-circle"></i> Add</button>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <h4>📋 Add Match / Moment</h4>
+                    <input type="text" id="matchTitle" placeholder="Match title">
+                    <input type="text" id="matchScore" placeholder="Score">
+                    <textarea id="matchDetails" rows="2" placeholder="Result details"></textarea>
+                    <button id="addMatchBtn"><i class="fas fa-plus"></i> Add to Live Battles</button>
+                    <button id="addMomentBtn" style="background:#4a5b7a;"><i class="fas fa-camera"></i> Add Moment</button>
+                </div>
+            `;
+            
+            // Initialize all admin controls
+            renderAdminLeaderboardControls();
+            renderAdminPerformersControls();
+            renderAdminScheduleControls();
+            
+            document.getElementById('addNewTeamBtn')?.addEventListener('click', addNewTeam);
+            document.getElementById('addNewPerformerBtn')?.addEventListener('click', addNewPerformer);
+            document.getElementById('addMatchBtn')?.addEventListener('click', addMatch);
+            document.getElementById('addMomentBtn')?.addEventListener('click', addMoment);
+            document.getElementById('addScheduleBtn')?.addEventListener('click', addNewScheduleMatch);
+            document.getElementById('updateLiveMatchBtn')?.addEventListener('click', updateLiveMatchFromAdmin);
+            document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
+        }
+    }
+    
+    function renderAdminLeaderboardControls() {
+        const container = document.getElementById('leaderboardAdminControls');
+        if(!container) return;
+        container.innerHTML = '<div><strong>✏️ Edit/Delete Teams:</strong></div>';
+        teamsData.forEach((team, idx) => {
+            const div = document.createElement('div');
+            div.className = 'leaderboard-edit-row';
+            div.innerHTML = `<strong>${escapeHtml(team.name)}</strong><input type="number" id="played_${idx}" value="${team.played}" style="width:70px;"><input type="text" id="wld_${idx}" value="${escapeHtml(team.wld)}" style="width:100px;"><input type="number" id="pts_${idx}" value="${team.points}" style="width:80px;"><button class="update-team-btn" data-idx="${idx}" style="background:#2c6e2c;">Update</button><button class="delete-team-btn" data-idx="${idx}" style="background:#9e2a2a;">Delete</button>`;
+            container.appendChild(div);
+        });
+        document.querySelectorAll('.update-team-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                teamsData[idx].played = parseInt(document.getElementById(`played_${idx}`).value);
+                teamsData[idx].wld = document.getElementById(`wld_${idx}`).value.trim();
+                teamsData[idx].points = parseInt(document.getElementById(`pts_${idx}`).value);
+                renderLeaderboard();
+                renderAdminLeaderboardControls();
+                alert("Team updated!");
+            });
+        });
+        document.querySelectorAll('.delete-team-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                if(confirm(`Delete ${teamsData[idx].name}?`)) { teamsData.splice(idx,1); renderLeaderboard(); renderAdminLeaderboardControls(); alert("Deleted"); }
+            });
+        });
+    }
+    
+    function renderAdminPerformersControls() {
+        const container = document.getElementById('performersAdminControls');
+        if(!container) return;
+        container.innerHTML = '<div><strong>✏️ Edit/Delete Performers:</strong></div>';
+        performersData.forEach((perf, idx) => {
+            const div = document.createElement('div');
+            div.className = 'performer-edit-row';
+            div.innerHTML = `<input type="text" id="perfCat_${idx}" value="${escapeHtml(perf.category)}" style="width:130px;"><input type="text" id="perfPlayer_${idx}" value="${escapeHtml(perf.player)}" style="width:140px;"><input type="text" id="perfTeam_${idx}" value="${escapeHtml(perf.team)}" style="width:140px;"><input type="text" id="perfVal_${idx}" value="${escapeHtml(perf.value)}" style="width:110px;"><button class="update-perf-btn" data-idx="${idx}" style="background:#2c6e2c;">Update</button><button class="delete-perf-btn" data-idx="${idx}" style="background:#9e2a2a;">Delete</button>`;
+            container.appendChild(div);
+        });
+        document.querySelectorAll('.update-perf-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                performersData[idx] = { category: document.getElementById(`perfCat_${idx}`).value.trim(), player: document.getElementById(`perfPlayer_${idx}`).value.trim(), team: document.getElementById(`perfTeam_${idx}`).value.trim(), value: document.getElementById(`perfVal_${idx}`).value.trim() };
+                renderTopPerformersDisplay(); renderAdminPerformersControls(); alert("Updated");
+            });
+        });
+        document.querySelectorAll('.delete-perf-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(btn.getAttribute('data-idx'));
+                if(confirm(`Delete ${performersData[idx].category}?`)) { performersData.splice(idx,1); renderTopPerformersDisplay(); renderAdminPerformersControls(); alert("Deleted"); }
+            });
+        });
+    }
+    
+    function addNewTeam() {
+        const name = document.getElementById('newTeamName')?.value.trim();
+        const played = parseInt(document.getElementById('newPlayed')?.value);
+        const wld = document.getElementById('newWLD')?.value.trim();
+        const points = parseInt(document.getElementById('newPoints')?.value);
+        if(!name || isNaN(played) || !wld || isNaN(points)) { alert("Fill all fields"); return; }
+        teamsData.push({ name, played, wld, points });
+        renderLeaderboard(); renderAdminPanel(); alert(`Added ${name}`);
+    }
+    
+    function addNewPerformer() {
+        const category = document.getElementById('newPerfCategory')?.value.trim();
+        const player = document.getElementById('newPerfPlayer')?.value.trim();
+        const team = document.getElementById('newPerfTeam')?.value.trim();
+        const value = document.getElementById('newPerfValue')?.value.trim();
+        if(!category || !player || !team || !value) { alert("Fill all fields"); return; }
+        performersData.push({ category, player, team, value });
+        renderTopPerformersDisplay(); renderAdminPanel(); alert("Added");
+    }
+    
+    function addMatch() {
+        const title = document.getElementById('matchTitle')?.value.trim();
+        const score = document.getElementById('matchScore')?.value.trim();
+        const details = document.getElementById('matchDetails')?.value.trim();
+        if(!title || !score || !details) { alert("Fill all fields"); return; }
+        const liveDiv = document.getElementById('liveMatchesContainer');
+        const newCard = document.createElement('div');
+        newCard.className = 'match-card';
+        newCard.innerHTML = `<div class="sport-badge">🏆 MATCH</div><div><strong>${escapeHtml(title)}</strong> ${escapeHtml(score)}</div><div>${escapeHtml(details)}</div>`;
+        liveDiv.appendChild(newCard);
+        document.getElementById('matchTitle').value = ''; document.getElementById('matchScore').value = ''; document.getElementById('matchDetails').value = '';
+        alert("Match added!");
+    }
+    
+    function addMoment() {
+        const details = document.getElementById('matchDetails')?.value.trim();
+        if(!details) { alert("Write moment"); return; }
+        const momentContainer = document.getElementById('momentsContainer');
+        const newMoment = document.createElement('div');
+        newMoment.className = 'moment-card';
+        newMoment.innerHTML = `<i class="fas fa-star"></i> <strong>✨ New:</strong> ${escapeHtml(details)}`;
+        momentContainer.appendChild(newMoment);
+        document.getElementById('matchDetails').value = '';
+        alert("Moment added!");
+    }
+    
+    function handleLogin() {
+        const username = document.getElementById('loginUsername')?.value.trim();
+        const password = document.getElementById('loginPassword')?.value;
+        if(username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+            isAdminLoggedIn = true;
+            updateAdminUI();
+            renderAdminPanel();
+            alert("✅ Login successful!");
+        } else { document.getElementById('loginError').innerText = "❌ Invalid credentials"; }
+    }
+    
+    function handleLogout() { isAdminLoggedIn = false; updateAdminUI(); renderAdminPanel(); alert("Logged out"); }
+    
+    function updateAdminUI() {
+        const badge = document.getElementById('adminStatusBadge');
+        const lockIcon = document.getElementById('adminLockIcon');
+        if(badge) badge.innerHTML = isAdminLoggedIn ? 'Admin Mode 🔓' : 'Public View';
+        if(lockIcon) lockIcon.innerHTML = isAdminLoggedIn ? '🔓' : '🔒';
+    }
+    
+    // Tab Switching
+    const panels = { live: document.getElementById('livePanel'), schedule: document.getElementById('schedulePanel'), leaderboard: document.getElementById('leaderboardPanel'), moments: document.getElementById('momentsPanel'), admin: document.getElementById('adminPanel') };
+    function switchTab(tabId) {
+        Object.values(panels).forEach(p => p?.classList.remove('active-panel'));
+        if(panels[tabId]) panels[tabId].classList.add('active-panel');
+        document.querySelectorAll('.tab-btn').forEach(btn => { btn.classList.remove('active'); if(btn.getAttribute('data-tab') === tabId) btn.classList.add('active'); });
+        if(tabId === 'admin') renderAdminPanel();
+    }
+    document.querySelectorAll('.tab-btn').forEach(btn => { btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab'))); });
+    
+    // Initial Render
+    renderLeaderboard();
+    renderTopPerformersDisplay();
+    renderSchedule();
+    renderLiveScore();
+    updateAdminUI();
+    renderAdminPanel();
+</script>
+</body>
+</html>
